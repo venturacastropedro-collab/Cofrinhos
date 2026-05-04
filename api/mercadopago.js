@@ -1,4 +1,5 @@
 // api/mercadopago.js
+// Proxy seguro — aceita token do usuário OU usa o token do ambiente
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -7,12 +8,14 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Método não permitido' });
 
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) return res.status(500).json({ error: 'Token não configurado' });
-
-  const { endpoint } = req.query;
+  const { endpoint, token } = req.query;
   if (!endpoint) return res.status(400).json({ error: 'Endpoint não informado' });
 
+  // Usa token do usuário (OAuth) ou fallback para token do ambiente
+  const accessToken = token || process.env.MP_ACCESS_TOKEN;
+  if (!accessToken) return res.status(500).json({ error: 'Token não disponível' });
+
+  // Whitelist de endpoints permitidos
   const allowed = [
     '/v1/account/balance',
     '/v1/account/movements/search',
@@ -26,10 +29,7 @@ module.exports = async function handler(req, res) {
   try {
     const url = `https://api.mercadopago.com${decoded}`;
     const mpRes = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${accessToken}` },
     });
 
     const data = await mpRes.json();
