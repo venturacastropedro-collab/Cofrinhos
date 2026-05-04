@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/cdi", "dest": "/api/cdi.js" },
-    { "src": "/api/mercadopago", "dest": "/api/mercadopago.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/cdi", "destination": "/api/cdi.js" },
+    { "source": "/api/mercadopago", "destination": "/api/mercadopago.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
