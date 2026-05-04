@@ -2,16 +2,17 @@
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-mp-token');
   res.setHeader('Access-Control-Max-Age', '86400');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Método não permitido' });
 
-  const { endpoint, token } = req.query;
+  const { endpoint } = req.query;
   if (!endpoint) return res.status(400).json({ error: 'Endpoint não informado' });
 
-  const accessToken = token || process.env.MP_ACCESS_TOKEN;
+  // Token vem no header x-mp-token (OAuth do usuário) ou variável de ambiente
+  const accessToken = req.headers['x-mp-token'] || process.env.MP_ACCESS_TOKEN;
   if (!accessToken) return res.status(500).json({ error: 'Token não disponível' });
 
   const allowed = [
