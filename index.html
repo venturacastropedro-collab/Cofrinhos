@@ -9,7 +9,7 @@
 <style>
 :root {
   --gold:#C9A84C;--gold-dim:#7A6130;--gold-light:#E8C96A;
-  --dark:#0A0A0F;--dark-2:#111118;--dark-3:#1A1A25;--dark-4:#22223A; 
+  --dark:#0A0A0F;--dark-2:#111118;--dark-3:#1A1A25;--dark-4:#22223A;
   --text:#F0EDE8;--text-dim:#9997A0;--text-faint:#555568;
   --green:#4CAF7D;--green-bg:rgba(76,175,125,0.1);
   --blue:#4C8FD4;--blue-bg:rgba(76,143,212,0.1);
@@ -496,7 +496,7 @@ const VERCEL_API = 'https://cofrinhos.vercel.app';
 async function callMP(endpoint) {
   if (!S.token) throw new Error('Não autenticado');
   // Usa POST — token vai no body JSON, sem problema de CORS ou URL quebrada
-  const r = await fetch(`${VERCEL_API}/api/mercadopago`, {
+  const r = await fetch(`${VERCEL_API}/api/mp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ endpoint, token: S.token }),
