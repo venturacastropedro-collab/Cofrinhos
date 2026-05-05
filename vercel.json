@@ -1,8 +1,6 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/cdi", "destination": "/api/cdi.js" },
-    { "source": "/api/mercadopago", "destination": "/api/mercadopago.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
