@@ -491,15 +491,14 @@ async function fetchCDI() {
 // =============================================
 // MERCADO PAGO API — direto com token do usuário
 // =============================================
-// Chama a API do Mercado Pago diretamente com o token OAuth do usuário
+const VERCEL_API = 'https://cofrinhos.vercel.app';
+
 async function callMP(endpoint) {
   if (!S.token) throw new Error('Não autenticado');
-  const r = await fetch(`https://api.mercadopago.com${endpoint}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${S.token}`,
-      'Content-Type': 'application/json',
-    },
+  const r = await fetch(`${VERCEL_API}/api/mp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint, token: S.token }),
   });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
