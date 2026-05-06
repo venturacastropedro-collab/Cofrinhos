@@ -425,7 +425,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:22p
 // ═══════════════════════════════════════════
 const SUPA_URL = 'https://gqqvlfbhlzycbufszvfs.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxcXZsZmJobHp5Y2J1ZnN6dmZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTIzMjIsImV4cCI6MjA5MzY2ODMyMn0.PBljflyYE_n4mQBGVE_P3ZxDkVHhDQei0Uv7QCsg-XI';
-const RESEND_KEY = 're_cfvTJ5wm_8Nt4z5zJEjWyZDnEyPi9CbRw';
+// API key do Resend fica no servidor (Supabase Edge Function) — não exposta aqui
 
 // Supabase com sessão persistente (nunca expira automaticamente)
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
@@ -672,15 +672,16 @@ async function fetchCDI() {
 // ═══════════════════════════════════════════
 async function enviarEmail(para, assunto, htmlBody) {
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    // Chama a Edge Function do Supabase — seguro, sem expor a API key
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPA_URL}/functions/v1/send-email`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'Cofrinho <onboarding@resend.dev>',
-        to: [para],
-        subject: assunto,
-        html: htmlBody
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || SUPA_KEY}`,
+        'apikey': SUPA_KEY,
+      },
+      body: JSON.stringify({ to: para, subject: assunto, html: htmlBody })
     });
     return res.ok;
   } catch { return false; }
